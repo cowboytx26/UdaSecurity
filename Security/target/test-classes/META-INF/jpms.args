@@ -1,0 +1,4 @@
+--patch-module
+com.udacity.catpoint.service.Security=_
+--add-reads
+com.udacity.catpoint.service.Security=ALL-UNNAMED
