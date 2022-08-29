@@ -90,4 +90,7 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
     public ArmingStatus getArmingStatus() {
         return armingStatus;
     }
+
+    @Override
+    public boolean anySensorActivated() { return getSensors().stream().anyMatch(e -> e.getActive()); }
 }

@@ -45,12 +45,18 @@ public class SecurityService {
      * Internal method that handles alarm status changes based on whether
      * the camera currently shows a cat.
      * @param cat True if a cat is detected, otherwise false.
+     * This method was not implemented correctly per requirement given in test #8
      */
     private void catDetected(Boolean cat) {
+
+        boolean activatedSensors = securityRepository.anySensorActivated();
+
         if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
         } else {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
+            if (activatedSensors) {
+                setAlarmStatus(AlarmStatus.NO_ALARM);
+            }
         }
 
         statusListeners.forEach(sl -> sl.catDetected(cat));
@@ -92,11 +98,14 @@ public class SecurityService {
 
     /**
      * Internal method for updating the alarm status when a sensor has been deactivated
+     * This was incorrectly implemented originally based on test requirement #4
+     * which states that if the system is in ALARM state, a deactivated sensor should not
+     * cause a change in alarmStatus of the system
      */
     private void handleSensorDeactivated() {
         switch(securityRepository.getAlarmStatus()) {
             case PENDING_ALARM -> setAlarmStatus(AlarmStatus.NO_ALARM);
-            case ALARM -> setAlarmStatus(AlarmStatus.PENDING_ALARM);
+            case ALARM -> setAlarmStatus(AlarmStatus.ALARM);
         }
     }
 
@@ -104,9 +113,13 @@ public class SecurityService {
      * Change the activation status for the specified sensor and update alarm status if necessary.
      * @param sensor
      * @param active
+     * This was incorrectly implemented based on test requirement #5
+     * which states that if the system is in PENDING_ALARM state, and an already activated sensor
+     * is activated again, the system should go into ALARM state
      */
     public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
-        if(!sensor.getActive() && active) {
+        //if(!sensor.getActive() && active) {
+        if(active) {
             handleSensorActivated();
         } else if (sensor.getActive() && !active) {
             handleSensorDeactivated();
