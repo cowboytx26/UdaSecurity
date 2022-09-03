@@ -33,11 +33,14 @@ public class SecurityService {
      * Sets the current arming status for the system. Changing the arming status
      * may update both the alarm status.
      * @param armingStatus
+     * This was not originally coded incorrectly as the requirement #9 is to set the AlarmStatus to NO_ALARM
+     * when the system is DISARMED
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
         if(armingStatus == ArmingStatus.DISARMED) {
             setAlarmStatus(AlarmStatus.NO_ALARM);
         }
+        if (armingStatus == ArmingStatus.ARMED_HOME)
         securityRepository.setArmingStatus(armingStatus);
     }
 
@@ -54,7 +57,7 @@ public class SecurityService {
         if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
         } else {
-            if (activatedSensors) {
+            if (!activatedSensors && !cat) {
                 setAlarmStatus(AlarmStatus.NO_ALARM);
             }
         }

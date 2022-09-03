@@ -1,9 +1,8 @@
 package com.udacity.catpoint.service;
 
+import com.udacity.catpoint.application.StatusListener;
 import com.udacity.catpoint.data.*;
 import com.udacity.catpoint.imageservice.FakeImageService;
-import com.udacity.catpoint.imageservice.ImageServiceInterface;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -13,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Predicate;
 
 import static org.mockito.Mockito.*;
 
@@ -28,6 +26,9 @@ public class SecurityServiceTest {
     //mock the security repository
     @Mock
     private SecurityRepository testSecurityRepository;
+
+    @Mock
+    private StatusListener testStatusListener;
 
     private SecurityService testSecurityService;
 
@@ -249,7 +250,7 @@ public class SecurityServiceTest {
         when(testSecurityRepository.anySensorActivated()).thenReturn(false);
         testSecurityService.processImage(catImage);
 
-        verify(testSecurityRepository, never()).setAlarmStatus(AlarmStatus.NO_ALARM);
+        verify(testSecurityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
 
     //Test #9: The system is disarmed
@@ -262,6 +263,80 @@ public class SecurityServiceTest {
 
     }
 
-    //Test #10: The system is armed
-    //Expected Outcome #10: all sensors set to inactive.
+    //Test #11: If the system is armed-home while the camera shows a cat
+    //Expected Outcome #11: set the alarm status to alarm.
+    @Test
+    void validate_sysArmedHomeandCat_equals_sysAlarm() {
+
+        BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+        when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
+        when(testSecurityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+        testSecurityService.setArmingStatus(ArmingStatus.ARMED_HOME);
+        testSecurityService.processImage(catImage);
+        verify(testSecurityRepository, times(1)).setAlarmStatus(AlarmStatus.ALARM);
+
+    }
+
+    //Test Coverage Requirement
+    @Test
+    void validate_handlesensorDeactivated_equals_AlarmStatusNoAlarm() {
+
+        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
+
+        //Add a sensor to activate
+        Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
+        testSecurityRepository.addSensor(windowSensor);
+        windowSensor.setActive(Boolean.TRUE);
+
+        testSecurityService.changeSensorActivationStatus(windowSensor, false);
+
+        verify(testSecurityRepository, times(1)).setAlarmStatus(AlarmStatus.NO_ALARM);
+    }
+
+    //Test coverage requirement
+    @Test
+    void validate_getAlarmStatus(){
+        testSecurityService.getAlarmStatus();
+        verify(testSecurityRepository, times(1)).getAlarmStatus();
+    }
+
+    //Test Coverage Requirement
+    @Test
+    void validate_getSensors(){
+        testSecurityService.getSensors();
+        verify(testSecurityRepository, times(1)).getSensors();
+    }
+
+    //Test Coverage Requirement
+    @Test
+    void validate_addSensor(){
+
+        //Add a sensor to activate
+        Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
+        testSecurityService.addSensor(windowSensor);
+        windowSensor.setActive(Boolean.TRUE);
+
+        verify(testSecurityRepository, times(1)).addSensor(any());
+    }
+
+    //Test Coverage Requirement
+    @Test
+    void validate_removeSensor() {
+
+        //Add a sensor to remove
+        Sensor windowSensor = new Sensor("Back Window", SensorType.WINDOW);
+        testSecurityService.addSensor(windowSensor);
+        testSecurityService.removeSensor(windowSensor);
+
+        verify(testSecurityRepository, times(1)).removeSensor(any());
+    }
+
+    //Test Coverage Requirement
+    @Test
+    void validate_addAndremoveStatusListener() {
+
+        testSecurityService.addStatusListener(testStatusListener);
+        testSecurityService.removeStatusListener(testStatusListener);
+
+    }
 }

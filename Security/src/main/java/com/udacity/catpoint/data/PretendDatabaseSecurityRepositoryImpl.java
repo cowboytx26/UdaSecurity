@@ -70,10 +70,13 @@ public class PretendDatabaseSecurityRepositoryImpl implements SecurityRepository
         prefs.put(ALARM_STATUS, this.alarmStatus.toString());
     }
 
+    //The original method here was incorrect.  The requirement is to reset the sensors to inactive when the system
+    //is armed.  There was no functionality here to do that originally.
     @Override
     public void setArmingStatus(ArmingStatus armingStatus) {
         this.armingStatus = armingStatus;
         prefs.put(ARMING_STATUS, this.armingStatus.toString());
+        if ((armingStatus == ArmingStatus.ARMED_HOME) || (armingStatus == ArmingStatus.ARMED_AWAY)) getSensors().stream().forEach(e -> e.setActive(false));
     }
 
     @Override

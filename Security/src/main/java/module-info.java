@@ -7,4 +7,5 @@ module com.udacity.catpoint.service.Security {
     requires com.miglayout.swing;
     //requires guava.collections.r03;
     opens com.udacity.catpoint.data to com.google.gson;
+    opens com.udacity.catpoint.service;
 }
