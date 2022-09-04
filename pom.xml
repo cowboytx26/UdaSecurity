@@ -19,7 +19,13 @@
             <name>arepo</name>
             <url>https://repo.fusesource.com/nexus/content/repositories/releases-3rd-party</url>
         </repository>
+        <repository>
+            <id>spot-bugs-repo</id>
+            <name>SpotBugs</name>
+            <url>https://mvnrepository.com</url>
+        </repository>
     </repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>14</maven.compiler.source>
@@ -46,7 +52,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.0-alpha7</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
 
