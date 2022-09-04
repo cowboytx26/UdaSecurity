@@ -13,14 +13,6 @@
     <artifactId>Image</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>spot-bugs-repo</id>
-            <name>SpotBugs</name>
-            <url>https://mvnrepository.com</url>
-        </repository>
-    </repositories>
-
     <properties>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
