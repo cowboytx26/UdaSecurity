@@ -241,6 +241,18 @@ public class SecurityServiceTest {
         verify(testSecurityRepository).setAlarmStatus(AlarmStatus.ALARM);
     }
 
+    //Test #7A: Based on feedback, if the system is DISARMED, it should not change to ALARM state when a cat is
+    //detected
+    @Test
+    void validate_catImage_sysDisarmed_equals_notSysAlarm() {
+
+        BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+        when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
+        when(testSecurityRepository.getArmingStatus()).thenReturn(ArmingStatus.DISARMED);
+        testSecurityService.processImage(catImage);
+        verify(testSecurityRepository, never()).setAlarmStatus(AlarmStatus.ALARM);
+    }
+
     //Test #8: The image service identifies an image that does not contain a cat and the sensors are not active
     //Expected Outcome #8: System status should be no alarm
     @Test
@@ -271,10 +283,23 @@ public class SecurityServiceTest {
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
         when(testSecurityRepository.getArmingStatus()).thenReturn(ArmingStatus.ARMED_HOME);
+
         testSecurityService.setArmingStatus(ArmingStatus.ARMED_HOME);
         testSecurityService.processImage(catImage);
         verify(testSecurityRepository, times(1)).setAlarmStatus(AlarmStatus.ALARM);
 
+    }
+
+    //Test #11A: Based on feedback, if the system is DISARMED and a cat image is detected, the system should be in
+    //the NO_ALARM state
+    @Test
+    void validate_sysDisarmedandCat_equals_sysNoAlarm() {
+
+        BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+        when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
+        testSecurityService.setArmingStatus(ArmingStatus.DISARMED);
+        testSecurityService.processImage(catImage);
+        verify(testSecurityRepository, times(1)).setAlarmStatus(AlarmStatus.NO_ALARM);
     }
 
     //Test Coverage Requirement

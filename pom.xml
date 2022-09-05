@@ -40,11 +40,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.miglayout</groupId>
-            <artifactId>miglayout-swing</artifactId>
-            <version>11.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.0</version>
@@ -71,6 +66,12 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M5</version>
+                    <configuration>
+                        <argLine>
+                            --add-opens com.udacity.catpoint.service.Security/com.udacity.catpoint.service=ALL-UNNAMED
+                            --add-opens com.udacity.catpoint.imageservice.Image/com.udacity.catpoint.imageservice=ALL-UNNAMED
+                        </argLine>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>

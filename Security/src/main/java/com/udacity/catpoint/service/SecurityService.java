@@ -62,6 +62,8 @@ public class SecurityService {
             }
         }
 
+        if (cat && getArmingStatus() == ArmingStatus.DISARMED) setAlarmStatus(AlarmStatus.NO_ALARM);
+
         statusListeners.forEach(sl -> sl.catDetected(cat));
     }
 
