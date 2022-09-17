@@ -19,14 +19,14 @@ public class SecurityRepositoryTest {
     }
 
     @Test
-    public void validate_AnySensorsActivated_IsFalse() {
+    public void setAllSensorsInactive_ResultsIn_AnySensorsActivatedFalse() {
 
         testSecurityRepository.getSensors().forEach(s -> s.setActive(false));
         assertEquals(testSecurityRepository.anySensorActivated(), false);
     }
 
     @Test
-    public void validate_AnySensorsActivated_IsTrue() {
+    public void SetOneSensorActive_ResultsIn_AnySensorsActivatedTrue() {
 
         testSecurityRepository.getSensors().forEach(s -> s.setActive(false));
 
@@ -42,7 +42,7 @@ public class SecurityRepositoryTest {
     //Expected Outcome #10: all sensors set to inactive (assertEquals(testSecurityRepository.anySensorActivated(), false)
     @ParameterizedTest
     @EnumSource(value = ArmingStatus.class, names = {"ARMED_HOME", "ARMED_AWAY"})
-    public void validate_SysArmed_AnySensorActivated_IsFalse(ArmingStatus testStatus) {
+    public void SysArmed_ResultsIn_AnySensorActivated_IsFalse(ArmingStatus testStatus) {
 
         testSecurityRepository.getSensors().forEach(s -> s.setActive(true));
 

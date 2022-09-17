@@ -40,7 +40,7 @@ public class SecurityServiceTest {
     //Test #1: If alarm is armed and a sensor becomes activated
     //Expected Outcome #1: Put the system into pending alarm status
     @Test
-    void validate_ArmedAlarm_ActivatedSensor_equals_SysPendingAlarm(){
+    void ArmedAlarm_ActivatedSensor_ResultsIn_SysPendingAlarm(){
 
         //Since I am mocking the repository, I have to make sure it returns NO_ALARM when calling
         //the getAlarmStatus method
@@ -71,7 +71,7 @@ public class SecurityServiceTest {
     //Test #2: If alarm is armed, a sensor becomes activated, and the system is already pending alarm,
     //Expected Outcome #2: The system should set the alarm status to alarm
     @Test
-    void validate_ArmedAlarm_ActivatedSensor_sysPendingAlarm_equals_SysAlarm(){
+    void ArmedAlarm_ActivatedSensor_sysPendingAlarm_ResultsIn_SysAlarm(){
 
         //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
         //the getAlarmStatus method
@@ -101,7 +101,7 @@ public class SecurityServiceTest {
     //Test #3: If pending alarm and all sensors are inactive
     //Expected Outcome #3: return to no alarm state
     @Test
-    void validate_pendingAlarm_inactiveSensors_equals_SysNoAlarm(){
+    void pendingAlarm_inactiveSensors_ResultsIn_SysNoAlarm(){
 
         //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
         //the getAlarmStatus method
@@ -136,7 +136,7 @@ public class SecurityServiceTest {
     //Test #4: Alarm is active and change in sensor state
     //Expected Outcome #4: No effect on the alarm state
     @Test
-    void validate_alarmActive_sensorChanged_equals_sysNoChange(){
+    void alarmActive_sensorChanged_ResultsIn_sysNoChange(){
 
         //Since I am mocking the repository, I have to make sure it returns ALARM when calling
         //the getAlarmStatus method
@@ -168,7 +168,7 @@ public class SecurityServiceTest {
     //Test #5: A sensor is activated while already active and the system is in pending state
     //Expected Outcome #5: The system should change to alarm state
     @Test
-    void validate_sensorActivated_sysPendingAlarm_equals_sysAlarm(){
+    void sensorActivated_sysPendingAlarm_ResultsIn_sysAlarm(){
 
         //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
         //the getAlarmStatus method
@@ -196,7 +196,7 @@ public class SecurityServiceTest {
     //Test #6: A sensor is deactivated while already inactive
     //Expected Outcome #6: the alarm state should not change
     @Test
-    void validate_sensorDeactivated_equals_sysNoChange() {
+    void sensorDeactivated_ResultsIn_sysNoChange() {
 
         //Add a sensor to deactivate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
@@ -221,7 +221,7 @@ public class SecurityServiceTest {
     //Test #7: The image service identifies an image containing a cat while the system is armed-home
     //Expected Outcome #7: the system should be in alarm status
     @Test
-    void validate_catImage_sysArmedHome_equals_sysAlarm() {
+    void catImage_sysArmedHome_ResultsIn_sysAlarm() {
 
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
@@ -233,7 +233,7 @@ public class SecurityServiceTest {
     //Test #7A: Based on feedback, if the system is DISARMED, it should not change to ALARM state when a cat is
     //detected
     @Test
-    void validate_catImage_sysDisarmed_equals_notSysAlarm() {
+    void catImage_sysDisarmed_ResultsIn_notSysAlarm() {
 
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
@@ -245,7 +245,7 @@ public class SecurityServiceTest {
     //Test #8: The image service identifies an image that does not contain a cat and the sensors are not active
     //Expected Outcome #8: System status should be no alarm
     @Test
-    void validate_catImageFalse_sensorsNotActive_equals_sysNoAlarm(){
+    void catImageFalse_sensorsNotActive_ResultsIn_sysNoAlarm(){
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(false);
         when(testSecurityRepository.anySensorActivated()).thenReturn(false);
@@ -257,7 +257,7 @@ public class SecurityServiceTest {
     //Test #9: The system is disarmed
     //Expected Outcome #9: The status of the system is set to no alarm
     @Test
-    void validate_sysDisArmed_equals_sysNoAlarm() {
+    void sysDisArmed_ResultsIn_sysNoAlarm() {
 
         testSecurityService.setArmingStatus(ArmingStatus.DISARMED);
         verify(testSecurityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
@@ -267,7 +267,7 @@ public class SecurityServiceTest {
     //Test #11: If the system is armed-home while the camera shows a cat
     //Expected Outcome #11: set the alarm status to alarm.
     @Test
-    void validate_sysArmedHomeandCat_equals_sysAlarm() {
+    void sysArmedHomeandCat_ResultsIn_sysAlarm() {
 
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
@@ -282,7 +282,7 @@ public class SecurityServiceTest {
     //Test #11A: Based on feedback, if the system is DISARMED and a cat image is detected, the system should be in
     //the NO_ALARM state
     @Test
-    void validate_sysDisarmedandCat_equals_sysNoAlarm() {
+    void sysDisarmedandCat_ResultsIn_sysNoAlarm() {
 
         BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
         when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
@@ -293,7 +293,7 @@ public class SecurityServiceTest {
 
     //Test Coverage Requirement
     @Test
-    void validate_handlesensorDeactivated_equals_AlarmStatusNoAlarm() {
+    void handlesensorDeactivated_ResultsIn_AlarmStatusNoAlarm() {
 
         when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
 
@@ -309,21 +309,21 @@ public class SecurityServiceTest {
 
     //Test coverage requirement
     @Test
-    void validate_getAlarmStatus(){
+    void getAlarmStatus_Coverage(){
         testSecurityService.getAlarmStatus();
         verify(testSecurityRepository, times(1)).getAlarmStatus();
     }
 
     //Test Coverage Requirement
     @Test
-    void validate_getSensors(){
+    void getSensors_Coverage(){
         testSecurityService.getSensors();
         verify(testSecurityRepository, times(1)).getSensors();
     }
 
     //Test Coverage Requirement
     @Test
-    void validate_addSensor(){
+    void addSensor_Coverage(){
 
         //Add a sensor to activate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
@@ -335,7 +335,7 @@ public class SecurityServiceTest {
 
     //Test Coverage Requirement
     @Test
-    void validate_removeSensor() {
+    void removeSensor_Coverage() {
 
         //Add a sensor to remove
         Sensor windowSensor = new Sensor("Back Window", SensorType.WINDOW);
@@ -347,7 +347,7 @@ public class SecurityServiceTest {
 
     //Test Coverage Requirement
     @Test
-    void validate_addAndremoveStatusListener() {
+    void addAndremoveStatusListener_Coverage() {
 
         testSecurityService.addStatusListener(testStatusListener);
         testSecurityService.removeStatusListener(testStatusListener);
