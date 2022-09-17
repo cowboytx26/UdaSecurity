@@ -23,6 +23,7 @@ public class SecurityService {
     private FakeImageService imageService;
     private SecurityRepository securityRepository;
     private Set<StatusListener> statusListeners = new HashSet<>();
+    private boolean CatDetected = false;
 
     public SecurityService(SecurityRepository securityRepository, FakeImageService imageService) {
         this.securityRepository = securityRepository;
@@ -37,11 +38,14 @@ public class SecurityService {
      * when the system is DISARMED
      */
     public void setArmingStatus(ArmingStatus armingStatus) {
-        if(armingStatus == ArmingStatus.DISARMED) {
-            setAlarmStatus(AlarmStatus.NO_ALARM);
-        }
-        if (armingStatus == ArmingStatus.ARMED_HOME)
+
         securityRepository.setArmingStatus(armingStatus);
+        //if(armingStatus == ArmingStatus.DISARMED) {
+            setAlarmStatus(AlarmStatus.NO_ALARM);
+        //}
+        if (((armingStatus == ArmingStatus.ARMED_HOME) || (armingStatus == ArmingStatus.ARMED_AWAY)) && (CatDetected))
+            setAlarmStatus(AlarmStatus.ALARM);
+
     }
 
     /**
@@ -53,6 +57,8 @@ public class SecurityService {
     private void catDetected(Boolean cat) {
 
         boolean activatedSensors = securityRepository.anySensorActivated();
+
+        CatDetected = cat;
 
         if(cat && getArmingStatus() == ArmingStatus.ARMED_HOME) {
             setAlarmStatus(AlarmStatus.ALARM);
@@ -123,7 +129,7 @@ public class SecurityService {
      * is activated again, the system should go into ALARM state
      */
     public void changeSensorActivationStatus(Sensor sensor, Boolean active) {
-        //if(!sensor.getActive() && active) {
+
         if(active) {
             handleSensorActivated();
         } else if (sensor.getActive() && !active) {

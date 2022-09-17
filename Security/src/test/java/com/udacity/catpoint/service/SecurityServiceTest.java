@@ -42,9 +42,9 @@ public class SecurityServiceTest {
     @Test
     void validate_ArmedAlarm_ActivatedSensor_equals_SysPendingAlarm(){
 
-        //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
+        //Since I am mocking the repository, I have to make sure it returns NO_ALARM when calling
         //the getAlarmStatus method
-        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
+        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.NO_ALARM);
 
         //Add a sensor to activate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
@@ -57,7 +57,6 @@ public class SecurityServiceTest {
 
         //Alarm status should be set to NO_ALARM to start
         //VERIFY: This should have caused a call to setAlarmStatus in testSecurityRepository
-        testSecurityService.setAlarmStatus(AlarmStatus.NO_ALARM);
         verify(testSecurityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
 
         //Activate the sensor
@@ -65,6 +64,7 @@ public class SecurityServiceTest {
         testSecurityService.changeSensorActivationStatus(windowSensor, Boolean.TRUE);
         verify(testSecurityRepository).getAlarmStatus();
         verify(testSecurityRepository).updateSensor(windowSensor);
+        verify(testSecurityRepository).setAlarmStatus(AlarmStatus.PENDING_ALARM);
 
     }
 
@@ -73,9 +73,9 @@ public class SecurityServiceTest {
     @Test
     void validate_ArmedAlarm_ActivatedSensor_sysPendingAlarm_equals_SysAlarm(){
 
-        //Since I am mocking the repository, I have to make sure it returns ALARM when calling
+        //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
         //the getAlarmStatus method
-        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.ALARM);
+        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
 
         //Add a sensor to activate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
@@ -103,9 +103,9 @@ public class SecurityServiceTest {
     @Test
     void validate_pendingAlarm_inactiveSensors_equals_SysNoAlarm(){
 
-        //Since I am mocking the repository, I have to make sure it returns NO_ALARM when calling
+        //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
         //the getAlarmStatus method
-        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.NO_ALARM);
+        when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
 
         //Add a sensor to activate then inactivate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
@@ -113,25 +113,18 @@ public class SecurityServiceTest {
 
         //Arm status should be armed
         //VERIFY: This should have caused a call to setArmingStatus in testSecurityRepository
+        //and set the AlarmStatus to NO_ALARM (verified later)
         testSecurityService.setArmingStatus(ArmingStatus.ARMED_HOME);
         verify(testSecurityRepository).setArmingStatus(ArmingStatus.ARMED_HOME);
 
-        //Alarm status should be set to NO_ALARM to start
-        //VERIFY: This should have caused a call to setAlarmStatus in testSecurityRepository
-        testSecurityService.setAlarmStatus(AlarmStatus.NO_ALARM);
-        verify(testSecurityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
-
         //Activate the sensor
-        //VERIFY: This should also cause a call to getAlarmStatus (verified at the end),
-        //setAlarmStatus(PENDING_ALARM), and updateSensor in testSecurityRepository
         testSecurityService.changeSensorActivationStatus(windowSensor, Boolean.TRUE);
-        verify(testSecurityRepository).setAlarmStatus(AlarmStatus.PENDING_ALARM);
 
         //Inactivate the sensor
         //VERIFY: This should also cause a call to getAlarmStatus (verified at the end),
         //setAlarmStatus(NO_ALARM), and updateSensor in testSecurityRepository
         testSecurityService.changeSensorActivationStatus(windowSensor, Boolean.FALSE);
-        verify(testSecurityRepository).setAlarmStatus(AlarmStatus.NO_ALARM);
+        verify(testSecurityRepository, times(2)).setAlarmStatus(AlarmStatus.NO_ALARM);
 
         //VERIFY: The previous two calls to the testSecurityRepository.getAlarmStatus()
         verify(testSecurityRepository, times(2)).getAlarmStatus();
@@ -204,10 +197,6 @@ public class SecurityServiceTest {
     //Expected Outcome #6: the alarm state should not change
     @Test
     void validate_sensorDeactivated_equals_sysNoChange() {
-
-        //Since I am mocking the repository, I have to make sure it returns PENDING_ALARM when calling
-        //the getAlarmStatus method
-        //when(testSecurityRepository.getAlarmStatus()).thenReturn(AlarmStatus.PENDING_ALARM);
 
         //Add a sensor to deactivate
         Sensor windowSensor = new Sensor("Front Window", SensorType.WINDOW);
