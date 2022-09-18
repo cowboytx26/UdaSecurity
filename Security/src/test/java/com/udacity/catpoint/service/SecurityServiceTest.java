@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -351,6 +353,19 @@ public class SecurityServiceTest {
 
         testSecurityService.addStatusListener(testStatusListener);
         testSecurityService.removeStatusListener(testStatusListener);
+
+    }
+
+    //Test Coverage Requirement
+    @ParameterizedTest
+    @EnumSource(value = ArmingStatus.class, names = {"ARMED_HOME", "ARMED_AWAY"})
+    void setArmingStatus_Coverage(ArmingStatus testStatus) {
+
+        BufferedImage catImage = new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB);
+        when(testImageService.imageContainsCat(any(), ArgumentMatchers.anyFloat())).thenReturn(true);
+        testSecurityService.processImage(catImage);
+        testSecurityService.setArmingStatus(testStatus);
+        verify(testSecurityRepository, times(1)).setAlarmStatus(AlarmStatus.ALARM);
 
     }
 }
